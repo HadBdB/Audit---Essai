@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f4e79">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Audit Gray">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<title>Audit patrimoine – saisie terrain</title>
+<style>
+:root{--p:#1f4e79;--p2:#2e75b6;--bg:#f3f5f8;--card:#fff;--txt:#1b1f24;--mut:#5d6773;--bd:#d5dbe3;--ok:#2e7d32;--warn:#c77700;--err:#c62828;--sel:#e3eefa}
+@media (prefers-color-scheme:dark){:root{--bg:#14181d;--card:#1e242b;--txt:#e8ecf0;--mut:#9aa5b1;--bd:#36404b;--sel:#22364d}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.4 -apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-text-size-adjust:100%}
+header{position:sticky;top:0;z-index:10;background:var(--p);color:#fff;padding:calc(env(safe-area-inset-top) + 8px) 12px 8px;display:flex;align-items:center;gap:10px}
+header h1{font-size:17px;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header button{background:rgba(255,255,255,.15);color:#fff;border:0;border-radius:8px;padding:8px 12px;font-size:15px}
+#save{font-size:12px;opacity:.85}
+nav{position:sticky;top:52px;z-index:9;display:flex;overflow-x:auto;background:var(--card);border-bottom:1px solid var(--bd)}
+nav button{flex:1 0 auto;border:0;background:none;padding:12px 14px;font-size:15px;color:var(--mut);border-bottom:3px solid transparent}
+nav button.on{color:var(--p2);border-color:var(--p2);font-weight:600}
+main{padding:12px;max-width:1000px;margin:0 auto;padding-bottom:90px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:12px}
+h2{font-size:18px;margin:6px 0 10px}h3{font-size:16px;margin:4px 0 8px}
+label.f{display:block;margin:10px 0}
+label.f>span{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
+input,select,textarea{width:100%;font-size:16px;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--txt)}
+textarea{min-height:70px;resize:vertical}
+.filled{border-color:var(--p2);background:var(--sel)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0 14px}
+.btn{display:inline-block;border:0;border-radius:10px;padding:12px 16px;font-size:16px;background:var(--p2);color:#fff;margin:4px 4px 4px 0}
+.btn.sec{background:transparent;color:var(--p2);border:1px solid var(--p2)}
+.btn.danger{background:var(--err)}
+.btn.big{width:100%;padding:16px;font-size:17px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--bd);background:var(--card);color:var(--txt);border-radius:18px;padding:8px 12px;font-size:14px}
+.chip.on{background:var(--p2);color:#fff;border-color:var(--p2)}
+.chip.e-Neuf.on,.chip.e-Bon.on{background:var(--ok);border-color:var(--ok)}
+.chip.e-Moyen.on{background:var(--warn);border-color:var(--warn)}
+.chip.e-Mauvais.on,.chip.e-Hors.on{background:var(--err);border-color:var(--err)}
+.lot{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;font-size:16px;padding:14px;border:1px solid var(--bd);border-radius:10px;background:var(--card);color:var(--txt);margin-bottom:8px}
+.badge{font-size:12px;border-radius:10px;padding:3px 8px;background:var(--sel);color:var(--p2);white-space:nowrap}
+.row{border-left:4px solid var(--bd)}
+.row.done{border-left-color:var(--ok)}.row.warn{border-left-color:var(--warn)}
+.auto{font-size:13px;background:var(--sel);border-radius:8px;padding:8px;margin-top:8px}
+.mut{color:var(--mut);font-size:13px}
+.alert{border-radius:10px;padding:10px 12px;margin-bottom:12px;background:#fff3cd;color:#664d03;border:1px solid #ffe69c}
+@media (prefers-color-scheme:dark){.alert{background:#3b2f0a;color:#ffe69c;border-color:#6b5310}}
+.thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.thumb{position:relative;width:96px}
+.thumb img{width:96px;height:96px;object-fit:cover;border-radius:8px;display:block}
+.thumb b{position:absolute;top:4px;left:4px;background:rgba(0,0,0,.65);color:#fff;font-size:12px;border-radius:6px;padding:1px 6px}
+.thumb button{position:absolute;top:2px;right:2px;border:0;border-radius:50%;width:26px;height:26px;background:rgba(198,40,40,.9);color:#fff}
+details summary{cursor:pointer;padding:8px 0;color:var(--p2)}
+.audit{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.hidden{display:none!important}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#323a44;color:#fff;padding:10px 16px;border-radius:10px;z-index:99;max-width:90%}
+:focus-visible{outline:3px solid #f0a020;outline-offset:2px}
+</style>
+</head>
+<body>
+<header>
+  <button id="bHome" type="button" aria-label="Accueil">☰</button>
+  <h1 id="title">Audit patrimoine – Ville de Gray</h1>
+  <span id="save" aria-live="polite"></span>
+</header>
+<nav id="tabs" class="hidden" aria-label="Sections">
+  <button type="button" data-t="visite">Visite</button>
+  <button type="button" data-t="ident">Identification</button>
+  <button type="button" data-t="fonct">Fonctionnel</button>
+  <button type="button" data-t="tech">Technique</button>
+  <button type="button" data-t="photos">Photos</button>
+  <button type="button" data-t="export">Export</button>
+</nav>
+<main id="main"></main>
+<input type="file" id="fileCam" accept="image/*" capture="environment" class="hidden">
+<input type="file" id="fileGal" accept="image/*" multiple class="hidden">
+<input type="file" id="fileZip" accept=".zip,application/zip" class="hidden">
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
